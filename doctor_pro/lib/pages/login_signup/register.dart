@@ -1,13 +1,26 @@
 import 'package:doctor_pro/constant/constant.dart';
+import 'package:doctor_pro/pages/login_signup/register.controller.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:doctor_pro/pages/screens.dart';
 
-class Register extends StatelessWidget {
+class Register extends StatefulWidget {
+  @override
+  _RegisterState createState() => _RegisterState();
+}
+
+class _RegisterState extends State<Register> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
+
+    TextEditingController _email = TextEditingController();
+    TextEditingController _phone = TextEditingController();
+    TextEditingController _name = TextEditingController();
+    TextEditingController _password = TextEditingController();
+    List<String> genderOptions = ['Male', 'Female'];
+    String selectedGender = 'Female';
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
@@ -79,6 +92,7 @@ class Register extends StatelessWidget {
                           borderRadius: BorderRadius.all(Radius.circular(20.0)),
                         ),
                         child: TextField(
+                          controller: _name,
                           style: inputLoginTextStyle,
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.only(left: 20.0),
@@ -98,6 +112,7 @@ class Register extends StatelessWidget {
                           borderRadius: BorderRadius.all(Radius.circular(20.0)),
                         ),
                         child: TextField(
+                          controller: _email,
                           style: inputLoginTextStyle,
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.only(left: 20.0),
@@ -112,11 +127,57 @@ class Register extends StatelessWidget {
                     Padding(
                       padding: EdgeInsets.only(right: 20.0, left: 20.0),
                       child: Container(
+                        width: 120.0, // Adjust the width as needed
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200]!.withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                        child: Theme(
+                          data: Theme.of(context).copyWith(
+                            canvasColor: Colors.black.withOpacity(
+                                0.7), // Set the dropdown list background color
+                          ),
+                          child: DropdownButtonFormField<String>(
+                            value: selectedGender,
+                            onChanged: (newValue) {
+                              setState(() {
+                                selectedGender = newValue!;
+                              });
+                            },
+                            icon: Icon(Icons
+                                .arrow_drop_down), // Set the dropdown icon on the right
+                            iconSize: 24.0,
+                            iconEnabledColor: Colors.white,
+                            style: inputLoginTextStyle,
+                            decoration: InputDecoration(
+                              contentPadding: EdgeInsets.only(left: 20.0),
+                              hintText: 'Gender',
+                              hintStyle: inputLoginTextStyle,
+                              border: InputBorder.none,
+                            ),
+                            items: genderOptions.map((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(
+                                  value,
+                                  style: inputLoginTextStyle,
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20.0),
+                    Padding(
+                      padding: EdgeInsets.only(right: 20.0, left: 20.0),
+                      child: Container(
                         decoration: BoxDecoration(
                           color: Colors.grey[200]!.withOpacity(0.3),
                           borderRadius: BorderRadius.all(Radius.circular(20.0)),
                         ),
                         child: TextField(
+                          controller: _password,
                           style: inputLoginTextStyle,
                           obscureText: true,
                           decoration: InputDecoration(
@@ -153,13 +214,9 @@ class Register extends StatelessWidget {
                       padding: EdgeInsets.only(right: 20.0, left: 20.0),
                       child: InkWell(
                         borderRadius: BorderRadius.circular(30.0),
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              PageTransition(
-                                  duration: Duration(milliseconds: 600),
-                                  type: PageTransitionType.fade,
-                                  child: BottomBar()));
+                        onTap: () async {
+                          await RegistrationController.register(context, _email,
+                              _password, _name, _phone, selectedGender);
                         },
                         child: Container(
                           height: 50.0,

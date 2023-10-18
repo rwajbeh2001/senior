@@ -1,36 +1,21 @@
 import 'dart:io';
 
 import 'package:doctor_pro/constant/constant.dart';
+import 'package:doctor_pro/pages/login_signup/login.controller.dart';
 import 'package:doctor_pro/pages/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:page_transition/page_transition.dart';
 
-class Login extends StatefulWidget {
-  @override
-  _LoginState createState() => _LoginState();
-}
-
-class _LoginState extends State<Login> {
-  DateTime? currentBackPressTime;
-  String phoneNumber = '';
-  String? phoneIsoCode;
-  final TextEditingController controller = TextEditingController();
-  String initialCountry = 'IN';
-  PhoneNumber number = PhoneNumber(isoCode: 'IN');
-  void onPhoneNumberChange(
-      String number, String internationalizedPhoneNumber, String isoCode) {
-    setState(() {
-      phoneNumber = number;
-      phoneIsoCode = isoCode;
-    });
-  }
-
+class Login extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
+    TextEditingController _emailController = TextEditingController();
+    TextEditingController _passwordController = TextEditingController();
+
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
@@ -64,14 +49,26 @@ class _LoginState extends State<Login> {
             child: WillPopScope(
               child: Scaffold(
                 backgroundColor: Colors.transparent,
+
+                // appBar: AppBar(
+                //   backgroundColor: Colors.transparent,
+                //   elevation: 0.0,
+                //   leading: IconButton(
+                //     icon: Icon(Icons.arrow_back),
+                //     onPressed: () {
+                //       Navigator.push(context,
+                //           MaterialPageRoute(builder: (context) => Login()));
+                //     },
+                //   ),
+                // ),
                 body: ListView(
                   physics: BouncingScrollPhysics(),
                   children: <Widget>[
-                    SizedBox(height: 30.0),
+                    SizedBox(height: 50.0),
                     Padding(
                       padding: EdgeInsets.only(top: 20.0, left: 20.0),
                       child: Text(
-                        'Welcome back',
+                        'Welcom Back',
                         style: loginBigTextStyle,
                       ),
                     ),
@@ -79,58 +76,59 @@ class _LoginState extends State<Login> {
                     Padding(
                       padding: EdgeInsets.only(left: 20.0),
                       child: Text(
-                        'Login in your account',
+                        'Login To Your Account',
                         style: whiteSmallLoginTextStyle,
                       ),
                     ),
-                    SizedBox(height: 70.0),
+                    SizedBox(height: 50.0),
                     Padding(
-                      padding: EdgeInsets.all(20.0),
+                      padding: EdgeInsets.only(right: 20.0, left: 20.0),
                       child: Container(
-                        padding: EdgeInsets.only(left: 10.0),
                         decoration: BoxDecoration(
                           color: Colors.grey[200]!.withOpacity(0.3),
                           borderRadius: BorderRadius.all(Radius.circular(20.0)),
                         ),
-                        child: InternationalPhoneNumberInput(
-                          textStyle: inputLoginTextStyle,
-                          autoValidateMode: AutovalidateMode.disabled,
-                          selectorTextStyle: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          initialValue: number,
-                          textFieldController: controller,
-                          inputBorder: InputBorder.none,
-                          inputDecoration: InputDecoration(
-                            contentPadding:
-                                EdgeInsets.only(left: 0.0, bottom: 15.0),
-                            hintText: 'Phone Number',
+                        child: TextField(
+                          controller: _emailController,
+                          style: inputLoginTextStyle,
+                          decoration: InputDecoration(
+                            contentPadding: EdgeInsets.only(left: 20.0),
+                            hintText: 'Email',
                             hintStyle: inputLoginTextStyle,
                             border: InputBorder.none,
                           ),
-                          selectorConfig: SelectorConfig(
-                            selectorType: PhoneInputSelectorType.DIALOG,
-                          ),
-                          onInputChanged: (PhoneNumber number) {
-                            print(number.phoneNumber);
-                          },
                         ),
                       ),
                     ),
-                    SizedBox(height: 30.0),
+                    SizedBox(height: 20.0),
+                    Padding(
+                      padding: EdgeInsets.only(right: 20.0, left: 20.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200]!.withOpacity(0.3),
+                          borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                        ),
+                        child: TextField(
+                          controller: _passwordController,
+                          style: inputLoginTextStyle,
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            contentPadding: EdgeInsets.only(left: 20.0),
+                            hintText: 'Password',
+                            hintStyle: inputLoginTextStyle,
+                            border: InputBorder.none,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 40.0),
                     Padding(
                       padding: EdgeInsets.only(right: 20.0, left: 20.0),
                       child: InkWell(
                         borderRadius: BorderRadius.circular(30.0),
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              PageTransition(
-                                  duration: Duration(milliseconds: 600),
-                                  type: PageTransitionType.fade,
-                                  child: OTPScreen()));
+                        onTap: () async {
+                          await LoginController.login(
+                              context, _emailController, _passwordController);
                         },
                         child: Container(
                           height: 50.0,
@@ -156,80 +154,46 @@ class _LoginState extends State<Login> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 10.0),
-                    Text(
-                      'We\'ll send OTP for Verification',
-                      textAlign: TextAlign.center,
-                      style: whiteSmallLoginTextStyle,
-                    ),
-                    SizedBox(height: 30.0),
-                    InkWell(
-                      onTap: () {},
-                      child: Padding(
-                        padding: EdgeInsets.all(20.0),
+                    SizedBox(height: 20.0),
+                    Padding(
+                      padding: EdgeInsets.only(right: 20.0, left: 20.0),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(30.0),
+                        onTap: () async {
+                          await LoginController.goToRegister(context);
+                        },
                         child: Container(
-                          padding: EdgeInsets.all(15.0),
+                          height: 50.0,
+                          width: double.infinity,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(30.0),
-                            color: Color(0xFF3B5998),
+                            gradient: LinearGradient(
+                              begin: Alignment.centerLeft,
+                              end: Alignment.bottomRight,
+                              stops: [0.1, 0.5, 0.9],
+                              colors: [
+                                Colors.blue[300]!.withOpacity(0.8),
+                                Colors.blue[500]!.withOpacity(0.8),
+                                Colors.blue[800]!.withOpacity(0.8),
+                              ],
+                            ),
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              Image.asset(
-                                'assets/facebook.png',
-                                height: 25.0,
-                                fit: BoxFit.fitHeight,
-                              ),
-                              SizedBox(width: 10.0),
-                              Text(
-                                'Log in with Facebook',
-                                style: whiteSmallLoginTextStyle,
-                              ),
-                            ],
+                          child: Text(
+                            'Create New Account',
+                            style: inputLoginTextStyle,
                           ),
                         ),
                       ),
-                    ),
-                    InkWell(
-                      onTap: () {},
-                      child: Padding(
-                        padding: EdgeInsets.all(20.0),
-                        child: Container(
-                          padding: EdgeInsets.all(15.0),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(30.0),
-                            color: Colors.white,
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              Image.asset(
-                                'assets/google.png',
-                                height: 25.0,
-                                fit: BoxFit.fitHeight,
-                              ),
-                              SizedBox(width: 10.0),
-                              Text(
-                                'Log in with Google',
-                                style: blackSmallLoginTextStyle,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
+                    )
                   ],
                 ),
               ),
               onWillPop: () async {
                 bool backStatus = onWillPop();
                 if (backStatus) {
-                  exit(0);
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Login()));
                 }
                 return false;
               },
@@ -241,18 +205,6 @@ class _LoginState extends State<Login> {
   }
 
   onWillPop() {
-    DateTime now = DateTime.now();
-    if (currentBackPressTime == null ||
-        now.difference(currentBackPressTime!) > Duration(seconds: 2)) {
-      currentBackPressTime = now;
-      Fluttertoast.showToast(
-        msg: 'Press Back Once Again to Exit.',
-        backgroundColor: Colors.black,
-        textColor: whiteColor,
-      );
-      return false;
-    } else {
-      return true;
-    }
+    return true;
   }
 }
