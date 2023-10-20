@@ -6,9 +6,10 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'constant/constant.dart';
 
 void main() {
+  // Initialize plugins
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations(
-      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+      .then((_) {
     runApp(MyApp());
   });
 }

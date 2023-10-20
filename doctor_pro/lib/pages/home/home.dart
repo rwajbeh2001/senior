@@ -1,4 +1,5 @@
 import 'package:doctor_pro/constant/constant.dart';
+import 'package:doctor_pro/pages/login_signup/login.controller.dart';
 import 'package:doctor_pro/pages/screens.dart';
 import 'package:doctor_pro/widget/column_builder.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,7 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home> with WidgetsBindingObserver {
   String city = 'Wallington';
 
   final doctorTypeList = [

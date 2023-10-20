@@ -1,5 +1,8 @@
+import 'dart:html';
 import 'dart:io';
 
+import 'package:doctor_pro/Helpers/enviroment.dart';
+import 'package:doctor_pro/Helpers/storage.dart';
 import 'package:doctor_pro/constant/constant.dart';
 import 'package:doctor_pro/pages/login_signup/login.controller.dart';
 import 'package:doctor_pro/pages/screens.dart';
@@ -9,13 +12,40 @@ import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginController {
+  static String? loginToken;
+  static final apiKey = Enviroment.apiKey;
+  Constructor() {
+    LoginController.loginToken = null;
+  }
+
+  static isLoggedIn(context) async {
+    final loggedIn = await StroageController.get("loginToken");
+    final isloggedIn = loggedIn != null && loggedIn != "" ? true : false;
+    if (!isloggedIn) {
+      Navigator.push(
+          context,
+          PageTransition(
+              duration: Duration(milliseconds: 600),
+              type: PageTransitionType.fade,
+              child: Login()));
+    } else {
+      Navigator.push(
+          context,
+          PageTransition(
+              duration: Duration(milliseconds: 600),
+              type: PageTransitionType.fade,
+              child: BottomBar()));
+    }
+  }
+
   static login(context, email, password) async {
     print(email);
     print(password);
     final url = Uri.parse(
-        'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBWsODoUUCHwyWAaC5XXDJIOxuQk0lKJvI');
+        'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$apiKey');
     final response = await http.post(
       url,
       body: json.encode({
@@ -27,6 +57,15 @@ class LoginController {
     final res = json.decode(response.body);
     print(res);
     if (res["localId"] != "" && res["localId"] != null) {
+      final String id = res["localId"] ?? "";
+      final url =
+          'https://firestore.googleapis.com/v1/projects/YOUR_PROJECT_ID/databases/(default)/documents/Patient-Info?orderBy=id&equalTo=$id&key=$apiKey';
+      final uri = Uri.parse(url);
+      final adduser = await http.get(uri);
+      final responseData = json.decode(adduser.body);
+      print(responseData);
+      await StroageController.set("loginToken", res["idToken"]);
+      await StroageController.set("user", res["localId"]);
       Navigator.push(
           context,
           PageTransition(

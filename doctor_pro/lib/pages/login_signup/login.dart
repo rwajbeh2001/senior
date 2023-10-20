@@ -8,13 +8,35 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:page_transition/page_transition.dart';
 
-class Login extends StatelessWidget {
+class Login extends StatefulWidget {
+  @override
+  _Login createState() => _Login();
+}
+
+class _Login extends State<Login> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     TextEditingController _emailController = TextEditingController();
     TextEditingController _passwordController = TextEditingController();
+
+    void initState() {
+      super.initState();
+      WidgetsBinding.instance?.addObserver(this);
+    }
+
+    @override
+    void dispose() {
+      WidgetsBinding.instance?.removeObserver(this);
+      super.dispose();
+    }
+
+    void didChangeDependencies() async {
+      super.didChangeDependencies();
+      // Call your function here
+      await LoginController.isLoggedIn(this.context);
+    }
 
     return Container(
       decoration: BoxDecoration(
@@ -148,7 +170,7 @@ class Login extends StatelessWidget {
                             ),
                           ),
                           child: Text(
-                            'Continue',
+                            'Log In',
                             style: inputLoginTextStyle,
                           ),
                         ),

@@ -1,3 +1,4 @@
+import 'package:doctor_pro/Helpers/storage.dart';
 import 'package:doctor_pro/constant/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
@@ -23,6 +24,16 @@ class RegistrationController {
     print(res);
     if (res['localId'] != null) {
       // Signup successful
+      await StroageController.set("loginToken", res["idToken"]);
+      final userData = json.encode({
+        'id': res['localId'],
+        'name': name.text,
+        'phone': phone.text,
+        'country': name.text,
+        'gender': gender
+      });
+
+      await StroageController.set("user", userData);
       final user = json.encode({
         'fields': {
           'id': {'stringValue': res['localId']},
@@ -39,6 +50,7 @@ class RegistrationController {
       final adduser = await http.post(uri, body: user);
       final responseData = json.decode(adduser.body);
       print(responseData);
+
       Navigator.push(
           context,
           PageTransition(

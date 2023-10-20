@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:doctor_pro/constant/constant.dart';
+import 'package:doctor_pro/pages/login_signup/login.controller.dart';
 import 'package:doctor_pro/pages/screens.dart';
 import 'package:flutter/material.dart';
 
@@ -29,10 +30,8 @@ class _SplashScreenState extends State<SplashScreen>
       curve: Curves.elasticIn,
     ));
 
-    Timer(
-        Duration(seconds: 3),
-        () => Navigator.push(
-            context, MaterialPageRoute(builder: (context) => Login())));
+    Timer(Duration(seconds: 3),
+        () async => await LoginController.isLoggedIn(context));
   }
 
   @override
