@@ -13,6 +13,8 @@ import 'package:page_transition/page_transition.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class LoginController {
   static String? loginToken;
@@ -59,13 +61,53 @@ class LoginController {
     if (res["localId"] != "" && res["localId"] != null) {
       final String id = res["localId"] ?? "";
       final url =
-          'https://firestore.googleapis.com/v1/projects/YOUR_PROJECT_ID/databases/(default)/documents/Patient-Info?orderBy=id&equalTo=$id&key=$apiKey';
-      final uri = Uri.parse(url);
-      final adduser = await http.get(uri);
-      final responseData = json.decode(adduser.body);
-      print(responseData);
+          'https://firestore.googleapis.com/v1/projects/psychiatristapp-c31a8/databases/(default)/documents:runQuery?key=$apiKey';
+      final urli = Uri.parse(url);
+
+      final requestBody = jsonEncode({
+        'structuredQuery': {
+          'select': {
+            'fields': [
+              {'fieldPath': 'id'},
+              {'fieldPath': 'name'},
+              {'fieldPath': 'gender'},
+              {'fieldPath': 'country'},
+              {'fieldPath': 'phone'},
+              // Add other fields you want to retrieve
+            ],
+          },
+          'from': [
+            {'collectionId': 'Patient-Info'},
+          ],
+          'where': {
+            'fieldFilter': {
+              'field': {'fieldPath': 'id'},
+              'op': 'EQUAL',
+              'value': {'stringValue': id},
+            },
+          },
+        },
+      });
+
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: requestBody,
+      );
+      final responseData = json.decode(response.body);
+
+      final user = responseData[0]["document"]["fields"];
+      final userData = {
+        "id": responseData[0]["document"]["fields"]["id"]["stringValue"],
+        "country": responseData[0]["document"]["fields"]["country"]
+            ["stringValue"],
+        "gender": responseData[0]["document"]["fields"]["gender"]
+            ["stringValue"],
+        "name": responseData[0]["document"]["fields"]["name"]["stringValue"],
+        "phone": responseData[0]["document"]["fields"]["phone"]["stringValue"],
+      };
       await StroageController.set("loginToken", res["idToken"]);
-      await StroageController.set("user", res["localId"]);
+      await StroageController.set("user", jsonEncode(userData));
       Navigator.push(
           context,
           PageTransition(

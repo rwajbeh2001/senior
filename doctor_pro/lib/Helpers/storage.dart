@@ -11,4 +11,9 @@ class StroageController {
     print(value);
     await prefs.setString(key, value);
   }
+
+  static delete(key) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove(key);
+  }
 }

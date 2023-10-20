@@ -1,4 +1,5 @@
 import 'package:doctor_pro/constant/constant.dart';
+import 'package:doctor_pro/pages/profile/profile.controller.dart';
 import 'package:doctor_pro/pages/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
@@ -57,7 +58,8 @@ class _ProfileState extends State<Profile> {
                           ),
                         ),
                         InkWell(
-                          onTap: () {
+                          onTap: () async {
+                            await ProfileController.logout();
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -228,7 +230,7 @@ class _ProfileState extends State<Profile> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 InkWell(
-                  onTap: () => logoutDialogue(),
+                  onTap: () => {logoutDialogue()},
                   child: listItem(Colors.teal, Icons.exit_to_app, 'Logout'),
                 ),
               ],
